@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="tr">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Randevu Sistemi{% endblock %}</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --bs-primary: #2C3E50;
+            /* Midnight Blue */
+            --bs-primary-rgb: 44, 62, 80;
+            --bs-secondary: #E67E22;
+            /* Carrot Orange */
+            --bs-secondary-rgb: 230, 126, 34;
+            --bs-body-bg: #ECF0F1;
+            --bs-font-sans-serif: 'Outfit', sans-serif;
+        }
+
+        body {
+            font-family: var(--bs-font-sans-serif);
+            background-color: var(--bs-body-bg);
+            color: #34495e;
+        }
+
+        /* Navbar */
+        .navbar {
+            background-color: white;
+            padding: 1rem 0;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            color: var(--bs-primary) !important;
+            font-size: 1.5rem;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-link {
+            font-weight: 500;
+            color: #7f8c8d !important;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--bs-primary) !important;
+        }
+
+        /* Buttons */
+        .btn-primary {
+            background-color: var(--bs-primary);
+            border-color: var(--bs-primary);
+        }
+
+        .btn-primary:hover {
+            background-color: #1a252f;
+            border-color: #1a252f;
+        }
+
+        .btn-secondary {
+            background-color: var(--bs-secondary);
+            border-color: var(--bs-secondary);
+        }
+
+        .btn-secondary:hover {
+            background-color: #d35400;
+            border-color: #d35400;
+        }
+
+        .btn-outline-primary {
+            color: var(--bs-primary);
+            border-color: var(--bs-primary);
+        }
+
+        .btn-outline-primary:hover {
+            background-color: var(--bs-primary);
+            color: white;
+        }
+
+        /* Card */
+        .card {
+            border: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border-radius: 1rem;
+        }
+
+        /* Footer hover effect */
+        .hover-link:hover {
+            color: white !important;
+            transition: color 0.2s;
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+
+    <nav class="navbar navbar-expand-lg navbar-light shadow-sm sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'home' %}">
+                <i class="fa-solid fa-calendar-check text-secondary me-2"></i>RandevuAl
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    {% if user.is_authenticated %}
+                    {% if user.role == 'business_owner' %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'dashboard' %}">Yönetim Paneli</a>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'my_appointments' %}">Randevularım</a>
+                    </li>
+                    {% endif %}
+
+                    <li class="nav-item ms-2">
+                        <form action="{% url 'logout' %}" method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill px-3">Çıkış</button>
+                        </form>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'login' %}">Giriş Yap</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link btn btn-secondary text-white ms-2 rounded-pill px-4 shadow-sm"
+                            href="{% url 'register' %}">Kayıt Ol</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+
+    <main class="flex-grow-1">
+        {% block content %}{% endblock %}
+    </main>
+
+
+    <footer class="bg-dark text-white py-5 mt-5">
+        <div class="container">
+            <div class="row">
+                <!-- Brand Section -->
+                <div class="col-md-4 mb-4 mb-md-0">
+                    <h5 class="fw-bold mb-3">
+                        <i class="fa-solid fa-calendar-check text-secondary me-2"></i>RandevuAl
+                    </h5>
+                    <p class="text-muted small">Modern ve hızlı randevu sistemi ile işletmenizi kolayca yönetin veya
+                        hizmet alın.</p>
+                </div>
+
+                <!-- Quick Links -->
+                <div class="col-md-4 mb-4 mb-md-0">
+                    <h6 class="fw-bold mb-3">Hızlı Linkler</h6>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="{% url 'home' %}"
+                                class="text-white-50 text-decoration-none small hover-link"><i
+                                    class="fa-solid fa-angle-right me-2"></i>Anasayfa</a></li>
+                        {% if user.is_authenticated %}
+                        <li class="mb-2"><a href="{% url 'my_appointments' %}"
+                                class="text-white-50 text-decoration-none small hover-link"><i
+                                    class="fa-solid fa-angle-right me-2"></i>Randevularım</a></li>
+                        {% else %}
+                        <li class="mb-2"><a href="{% url 'login' %}"
+                                class="text-white-50 text-decoration-none small hover-link"><i
+                                    class="fa-solid fa-angle-right me-2"></i>Giriş Yap</a></li>
+                        <li class="mb-2"><a href="{% url 'register' %}"
+                                class="text-white-50 text-decoration-none small hover-link"><i
+                                    class="fa-solid fa-angle-right me-2"></i>Kayıt Ol</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+
+                <!-- Contact Info -->
+                <div class="col-md-4">
+                    <h6 class="fw-bold mb-3">İletişim</h6>
+                    <p class="text-white-50 small mb-2"><i class="fa-solid fa-envelope me-2"></i>info@randevual.com</p>
+                    <p class="text-white-50 small mb-2"><i class="fa-solid fa-phone me-2"></i>+90 (212) 123 45 67</p>
+                    <p class="text-white-50 small"><i class="fa-solid fa-location-dot me-2"></i>İstanbul, Türkiye</p>
+                </div>
+            </div>
+
+            <hr class="border-secondary my-4">
+
+            <div class="row">
+                <div class="col-md-12 text-center">
+                    <p class="mb-0 text-muted small">&copy; 2025 RandevuAl. Tüm hakları saklıdır.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+
+</html>

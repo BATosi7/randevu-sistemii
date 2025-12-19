@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Kayıt Ol{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-lg border-0 rounded-lg">
+                <div class="card-header bg-primary text-white text-center py-4">
+                    <h3 class="fw-bold mb-0"><i class="fa-solid fa-user-plus me-2"></i>Kayıt Ol</h3>
+                </div>
+                <div class="card-body p-5">
+                    <form method="post">
+                        {% csrf_token %}
+                        {% for field in form %}
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">{{ field.label }}</label>
+                            {{ field }}
+                            {% if field.help_text %}
+                            <small class="form-text text-muted">{{ field.help_text }}</small>
+                            {% endif %}
+                            {% for error in field.errors %}
+                            <div class="text-danger small">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        {% endfor %}
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg fw-bold">Kayıt Ol</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer text-center py-3">
+                    <div class="small"><a href="{% url 'login' %}">Zaten hesabınız var mı? Giriş yapın</a></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Add Bootstrap classes to form fields
+    document.querySelectorAll('input, select, textarea').forEach(function (input) {
+        input.classList.add('form-control');
+    });
+</script>
+{% endblock %}

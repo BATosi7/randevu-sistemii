@@ -1,0 +1,159 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero text-center mb-5 d-flex align-items-center"
+    style="min-height: 35vh; background: linear-gradient(135deg, var(--bs-primary), var(--bs-secondary));">
+    <div class="container text-white fade-in-up">
+        <h1 class="display-3 fw-bold mb-3">Randevunu Hemen Planla</h1>
+        <p class="lead mb-4 fs-4">Profesyonel hizmetler, tek tıkla randevu.</p>
+    </div>
+</section>
+
+<div class="container mb-5">
+    <!-- Categories Section (Shown only if NO filter) -->
+    {% if not request.GET.category %}
+    <h2 class="text-center mb-4 fw-bold text-primary display-6">Kategoriler</h2>
+    <div class="row mb-5 justify-content-center">
+        {% for category in categories %}
+        <div class="col-6 col-md-2 mb-3">
+            <a href="?category={{ category.id }}" class="text-decoration-none">
+                <div class="card h-100 text-center py-3 border-0 shadow-hover rounded-4 category-card">
+                    <div class="card-body p-2">
+                        <div class="icon-wrapper mb-2 mx-auto bg-light rounded-circle d-flex align-items-center justify-content-center"
+                            style="width: 60px; height: 60px;">
+                            <i class="{{ category.icon }} fa-lg text-primary"></i>
+                        </div>
+                        <h6 class="card-title fw-bold text-dark mb-0">{{ category.name }}</h6>
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center">
+            <p>Henüz kategori bulunmuyor.</p>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Companies Section (Shown only if Filtered) -->
+    {% if request.GET.category %}
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <h2 class="fw-bold text-primary display-6 mb-0">İşletmeler</h2>
+        <a href="{% url 'home' %}" class="btn btn-outline-secondary rounded-pill px-4 hover-scale"><i
+                class="fa-solid fa-arrow-left me-2"></i>Kategorilere Dön</a>
+    </div>
+    <div class="row">
+        {% for company in companies %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden company-card fade-in">
+                <div class="position-relative">
+                    <!-- Placeholder Image -->
+                    <div class="bg-secondary d-flex align-items-center justify-content-center text-white"
+                        style="height: 200px;">
+                        <i class="{{ company.category.icon }} fa-4x opacity-50"></i>
+                    </div>
+                    <span
+                        class="badge bg-white text-primary position-absolute top-0 end-0 m-3 shadow-sm px-3 py-2 rounded-pill fw-bold">
+                        <i class="fa-solid fa-star text-warning me-1"></i> {{ company.average_rating }}
+                    </span>
+                </div>
+                <div class="card-body p-4">
+                    <h5 class="card-title fw-bold mb-2">{{ company.name }}</h5>
+                    <p class="text-muted small mb-3"><i class="fa-solid fa-location-dot me-1"></i> {{ company.address }}
+                    </p>
+                    <p class="card-text text-secondary">{{ company.description|truncatechars:80 }}</p>
+                </div>
+                <div class="card-footer bg-white border-0 p-4 pt-0">
+                    <a href="{% url 'company_detail' company.id %}"
+                        class="btn btn-outline-primary w-100 rounded-pill fw-bold hover-scale">İncele</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <div class="alert alert-light shadow-sm rounded-4">
+                <i class="fa-solid fa-search fa-2x text-muted mb-3"></i>
+                <h4 class="text-muted">Bu kategoride işletme bulunamadı.</h4>
+                <a href="{% url 'home' %}" class="btn btn-link">Diğer kategorilere göz at</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    .category-card {
+        transition: all 0.3s ease;
+    }
+
+    .category-card:hover {
+        transform: translateY(-10px);
+    }
+
+    .category-card .icon-wrapper {
+        transition: all 0.3s ease;
+    }
+
+    .category-card:hover .icon-wrapper {
+        background-color: var(--bs-primary) !important;
+    }
+
+    .category-card:hover .icon-wrapper i {
+        color: white !important;
+    }
+
+    .company-card {
+        transition: all 0.3s ease;
+    }
+
+    .company-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 1rem 3rem rgba(0, 0, 0, .15) !important;
+    }
+
+    .hover-scale {
+        transition: transform 0.2s;
+    }
+
+    .hover-scale:hover {
+        transform: scale(1.05);
+    }
+
+    .shadow-hover:hover {
+        box-shadow: 0 1rem 3rem rgba(0, 0, 0, .1) !important;
+    }
+
+    .fade-in {
+        animation: fadeIn 0.8s ease-in;
+    }
+
+    .fade-in-up {
+        animation: fadeInUp 0.8s ease-out;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+{% endblock %}

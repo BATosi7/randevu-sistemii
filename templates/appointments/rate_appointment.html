@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block title %}Randevu Değerlendirme{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-lg border-0 rounded-lg">
+                <div class="card-header bg-primary text-white text-center py-4">
+                    <h3 class="fw-bold mb-0"><i class="fa-solid fa-star me-2"></i>Randevunuzu Değerlendirin</h3>
+                </div>
+                <div class="card-body p-5">
+                    <div class="alert alert-info mb-4">
+                        <strong>İşletme:</strong> {{ appointment.company.name }}<br>
+                        <strong>Hizmet:</strong> {{ appointment.service.name }}<br>
+                        <strong>Tarih:</strong> {{ appointment.date|date:"d.m.Y" }} - {{ appointment.time }}
+                    </div>
+
+                    <form method="post">
+                        {% csrf_token %}
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">{{ form.score.label }}</label>
+                            <div class="rating-options">
+                                {% for choice in form.score %}
+                                <div class="form-check mb-2">
+                                    {{ choice.tag }}
+                                    <label class="form-check-label fs-5" for="{{ choice.id_for_label }}">
+                                        {{ choice.choice_label }}
+                                    </label>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% if form.score.errors %}
+                            <div class="text-danger small">{{ form.score.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">{{ form.comment.label }}</label>
+                            {{ form.comment }}
+                            {% if form.comment.errors %}
+                            <div class="text-danger small">{{ form.comment.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg fw-bold">
+                                <i class="fa-solid fa-paper-plane me-2"></i>Gönder
+                            </button>
+                            <a href="{% url 'my_appointments' %}" class="btn btn-outline-secondary">İptal</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .rating-options .form-check {
+        padding: 12px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        transition: all 0.3s;
+    }
+
+    .rating-options .form-check:hover {
+        border-color: var(--bs-primary);
+        background-color: #f8f9fa;
+    }
+
+    .rating-options .form-check-input:checked+.form-check-label {
+        color: var(--bs-primary);
+        font-weight: bold;
+    }
+</style>
+{% endblock %}

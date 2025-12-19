@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+
+{% block title %}Randevularım{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Randevularım</h2>
+
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    <div class="row">
+        <div class="col-md-12">
+            {% if appointments %}
+            <!-- Desktop Table View -->
+            <div class="d-none d-md-block">
+                <div class="table-responsive">
+                    <table class="table table-hover table-bordered bg-white shadow-sm">
+                        <thead class="table-light">
+                            <tr>
+                                <th>İşletme</th>
+                                <th>Hizmet</th>
+                                <th>Tarih & Saat</th>
+                                <th>Durum</th>
+                                <th>İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for appointment in appointments %}
+                            <tr>
+                                <td>{{ appointment.company.name }}</td>
+                                <td>{{ appointment.service.name }}</td>
+                                <td>{{ appointment.date|date:"d.m.Y" }} - {{ appointment.time }}</td>
+                                <td>
+                                    {% if appointment.status == 'pending' %}
+                                    <span class="badge bg-warning text-dark">Bekliyor</span>
+                                    {% elif appointment.status == 'confirmed' %}
+                                    <span class="badge bg-success">Onaylandı</span>
+                                    {% elif appointment.status == 'completed' %}
+                                    <span class="badge bg-primary">Tamamlandı</span>
+                                    {% elif appointment.status == 'cancelled' %}
+                                    <span class="badge bg-danger">İptal Edildi</span>
+                                    {% else %}
+                                    <span class="badge bg-secondary">{{ appointment.get_status_display }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if appointment.status == 'pending' or appointment.status == 'confirmed' %}
+                                    <form method="post" action="{% url 'cancel_appointment' appointment.pk %}"
+                                        onsubmit="return confirm('Bu randevuyu iptal etmek istediğinizden emin misiniz?');">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">İptal Et</button>
+                                    </form>
+                                    {% elif appointment.status == 'completed' %}
+                                    {% if appointment.rating %}
+                                    <span class="badge bg-success"><i class="fa-solid fa-star"></i> {{ appointment.rating.score }}/5</span>
+                                    {% else %}
+                                    <a href="{% url 'rate_appointment' appointment.pk %}"
+                                        class="btn btn-sm btn-warning">
+                                        <i class="fa-solid fa-star"></i> Değerlendir
+                                    </a>
+                                    {% endif %}
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Mobile Card View -->
+            <div class="d-md-none">
+                {% for appointment in appointments %}
+                <div class="card mb-3 shadow-sm">
+                    <div class="card-body">
+                        <h6 class="card-title fw-bold">{{ appointment.company.name }}</h6>
+                        <p class="card-text mb-2"><strong>Hizmet:</strong> {{ appointment.service.name }}</p>
+                        <p class="card-text mb-2"><strong>Tarih:</strong> {{ appointment.date|date:"d.m.Y" }} - {{ appointment.time }}</p>
+                        <p class="card-text mb-3">
+                            <strong>Durum:</strong>
+                            {% if appointment.status == 'pending' %}
+                            <span class="badge bg-warning text-dark">Bekliyor</span>
+                            {% elif appointment.status == 'confirmed' %}
+                            <span class="badge bg-success">Onaylandı</span>
+                            {% elif appointment.status == 'completed' %}
+                            <span class="badge bg-primary">Tamamlandı</span>
+                            {% elif appointment.status == 'cancelled' %}
+                            <span class="badge bg-danger">İptal Edildi</span>
+                            {% else %}
+                            <span class="badge bg-secondary">{{ appointment.get_status_display }}</span>
+                            {% endif %}
+                        </p>
+                        {% if appointment.status == 'pending' or appointment.status == 'confirmed' %}
+                        <form method="post" action="{% url 'cancel_appointment' appointment.pk %}"
+                            onsubmit="return confirm('Bu randevuyu iptal etmek istediğinizden emin misiniz?');">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-outline-danger w-100">İptal Et</button>
+                        </form>
+                        {% elif appointment.status == 'completed' %}
+                        {% if appointment.rating %}
+                        <span class="badge bg-success w-100 py-2"><i class="fa-solid fa-star"></i> {{ appointment.rating.score }}/5</span>
+                        {% else %}
+                        <a href="{% url 'rate_appointment' appointment.pk %}" class="btn btn-sm btn-warning w-100">
+                            <i class="fa-solid fa-star"></i> Değerlendir
+                        </a>
+                        {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="alert alert-info">
+                Henüz randevunuz bulunmamaktadır.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

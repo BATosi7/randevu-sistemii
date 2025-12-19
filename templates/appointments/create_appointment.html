@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block title %}Randevu Al - {{ service.name }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card p-4">
+                <h3 class="text-center mb-4">Randevu Oluştur</h3>
+                <div class="alert alert-info">
+                    <strong>İşletme:</strong> {{ company.name }}<br>
+                    <strong>Hizmet:</strong> {{ service.name }}<br>
+                    <strong>Süre:</strong> {{ service.duration }} dk<br>
+                    <strong>Ücret:</strong> {{ service.price }} ₺
+                </div>
+
+
+                {% if form.errors %}
+                <div class="alert alert-danger">
+                    <strong>Hata!</strong>
+                    {% if form.non_field_errors %}
+                        {% for error in form.non_field_errors %}
+                            <p class="mb-0">{{ error }}</p>
+                        {% endfor %}
+                    {% endif %}
+                    {% for field in form %}
+                        {% if field.errors %}
+                            {% for error in field.errors %}
+                                <p class="mb-0">{{ field.label }}: {{ error }}</p>
+                            {% endfor %}
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">Tarih</label>
+                        {{ form.date }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Saat</label>
+                        {{ form.time }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Notlar (Opsiyonel)</label>
+                        {{ form.notes }}
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Randevuyu Onayla</button>
+                    <a href="{% url 'company_detail' company.id %}" class="btn btn-secondary w-100 mt-2">İptal</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

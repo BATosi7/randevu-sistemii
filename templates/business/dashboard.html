@@ -1,0 +1,208 @@
+{% extends 'base.html' %}
+
+{% block title %}İşletme Paneli{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>İşletme Yönetim Paneli</h2>
+        <span class="badge bg-primary fs-6">{{ request.user.company.name }}</span>
+    </div>
+
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    <!-- Revenue Card (New) -->
+    <div class="row mb-5">
+        <div class="col-6 col-md-3">
+            <div class="card text-center text-white bg-warning mb-3">
+                <div class="card-header">Bekleyen Randevular</div>
+                <div class="card-body">
+                    <h5 class="card-title display-6">{{ pending_count }}</h5>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card text-center text-white bg-success mb-3">
+                <div class="card-header">Bugünkü Randevular</div>
+                <div class="card-body">
+                    <h5 class="card-title display-6">{{ today_count }}</h5>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card text-center text-white bg-info mb-3">
+                <div class="card-header">Toplam Tamamlanan</div>
+                <div class="card-body">
+                    <h5 class="card-title display-6">{{ completed_count }}</h5>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card text-center text-white bg-primary mb-3">
+                <div class="card-header">Toplam Gelir</div>
+                <div class="card-body">
+                    <h5 class="card-title display-6">{{ revenue }} ₺</h5>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="row mb-5">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">Son 7 Günlük Randevu Trendi</div>
+                <div class="card-body">
+                    <canvas id="weeklyChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">Hizmet Popülaritesi</div>
+                <div class="card-body">
+                    <canvas id="serviceChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Appointments List -->
+    <h3 class="mb-3">Randevu Yönetimi</h3>
+
+    <!-- Desktop Table View -->
+    <div class="d-none d-md-block">
+        <div class="table-responsive">
+            <table class="table table-striped border">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Müşteri</th>
+                        <th>Hizmet</th>
+                        <th>Tarih & Saat</th>
+                        <th>Notlar</th>
+                        <th>Durum</th>
+                        <th>İşlem</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for appointment in appointments %}
+                    <tr>
+                        <td>{{ appointment.customer.username }}</td>
+                        <td>{{ appointment.service.name }}</td>
+                        <td>{{ appointment.date }} - {{ appointment.time }}</td>
+                        <td>{{ appointment.notes|default:"-" }}</td>
+                        <td>
+                            <span
+                                class="badge {% if appointment.status == 'pending' %}bg-warning{% elif appointment.status == 'confirmed' %}bg-success{% else %}bg-secondary{% endif %}">
+                                {{ appointment.get_status_display }}
+                            </span>
+                        </td>
+                        <td>
+                            {% if appointment.status == 'pending' %}
+                            <a href="{% url 'update_appointment_status' appointment.id 'confirmed' %}"
+                                class="btn btn-sm btn-success">Onayla</a>
+                            <a href="{% url 'update_appointment_status' appointment.id 'cancelled' %}"
+                                class="btn btn-sm btn-danger">Reddet</a>
+                            {% elif appointment.status == 'confirmed' %}
+                            <a href="{% url 'update_appointment_status' appointment.id 'completed' %}"
+                                class="btn btn-sm btn-primary">Tamamlandı</a>
+                            <a href="{% url 'update_appointment_status' appointment.id 'no_show' %}"
+                                class="btn btn-sm btn-dark">Gelmedi</a>
+                            {% else %}
+                            -
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center">Kayıtlı randevu bulunamadı.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Mobile Card View -->
+    <div class="d-md-none">
+        {% for appointment in appointments %}
+        <div class="card mb-3 shadow-sm">
+            <div class="card-body">
+                <h6 class="card-title fw-bold">{{ appointment.customer.username }}</h6>
+                <p class="card-text mb-2"><strong>Hizmet:</strong> {{ appointment.service.name }}</p>
+                <p class="card-text mb-2"><strong>Tarih:</strong> {{ appointment.date }} - {{ appointment.time }}</p>
+                {% if appointment.notes %}
+                <p class="card-text mb-2"><strong>Not:</strong> {{ appointment.notes }}</p>
+                {% endif %}
+                <p class="card-text mb-3">
+                    <strong>Durum:</strong>
+                    <span
+                        class="badge {% if appointment.status == 'pending' %}bg-warning{% elif appointment.status == 'confirmed' %}bg-success{% else %}bg-secondary{% endif %}">
+                        {{ appointment.get_status_display }}
+                    </span>
+                </p>
+                <div class="d-grid gap-2">
+                    {% if appointment.status == 'pending' %}
+                    <a href="{% url 'update_appointment_status' appointment.id 'confirmed' %}"
+                        class="btn btn-sm btn-success">Onayla</a>
+                    <a href="{% url 'update_appointment_status' appointment.id 'cancelled' %}"
+                        class="btn btn-sm btn-danger">Reddet</a>
+                    {% elif appointment.status == 'confirmed' %}
+                    <a href="{% url 'update_appointment_status' appointment.id 'completed' %}"
+                        class="btn btn-sm btn-primary">Tamamlandı</a>
+                    <a href="{% url 'update_appointment_status' appointment.id 'no_show' %}"
+                        class="btn btn-sm btn-dark">Gelmedi</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="alert alert-info">Kayıtlı randevu bulunamadı.</div>
+        {% endfor %}
+    </div>
+</div>
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        fetch('{% url "dashboard_data" %}')
+            .then(response => response.json())
+            .then(data => {
+                // Weekly Chart
+                new Chart(document.getElementById('weeklyChart'), {
+                    type: 'line',
+                    data: {
+                        labels: data.weekly_labels,
+                        datasets: [{
+                            label: 'Randevu Sayısı',
+                            data: data.weekly_data,
+                            borderColor: '#0d6efd',
+                            tension: 0.1
+                        }]
+                    }
+                });
+
+                // Service Chart
+                new Chart(document.getElementById('serviceChart'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: data.service_labels,
+                        datasets: [{
+                            data: data.service_data,
+                            backgroundColor: ['#ffc107', '#198754', '#0dcaf0', '#0d6efd', '#dc3545'],
+                        }]
+                    }
+                });
+            });
+    });
+</script>
+{% endblock %}
+{% endblock %}
