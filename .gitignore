@@ -26,10 +26,11 @@ venv/
 ENV/
 .venv
 
-# Django
+# Django stuff:
 *.log
-db.sqlite3
-db.sqlite3-journal
+local_settings.py
+# db.sqlite3  ← Commented out to upload database
+# db.sqlite3-journal
 /media
 /staticfiles
 *.pot
