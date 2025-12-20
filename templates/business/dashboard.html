@@ -85,6 +85,7 @@
                     <tr>
                         <th>Müşteri</th>
                         <th>Hizmet</th>
+                        <th>Personel</th>
                         <th>Tarih & Saat</th>
                         <th>Notlar</th>
                         <th>Durum</th>
@@ -96,6 +97,13 @@
                     <tr>
                         <td>{{ appointment.customer.username }}</td>
                         <td>{{ appointment.service.name }}</td>
+                        <td>
+                            {% if appointment.staff %}
+                            <span class="badge bg-info">{{ appointment.staff.name }}</span>
+                            {% else %}
+                            <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
                         <td>{{ appointment.date }} - {{ appointment.time }}</td>
                         <td>{{ appointment.notes|default:"-" }}</td>
                         <td>
@@ -133,14 +141,21 @@
     <!-- Mobile Card View -->
     <div class="d-md-none">
         {% for appointment in appointments %}
-        <div class="card mb-3 shadow-sm">
+        <div class="card mb-3">
             <div class="card-body">
-                <h6 class="card-title fw-bold">{{ appointment.customer.username }}</h6>
-                <p class="card-text mb-2"><strong>Hizmet:</strong> {{ appointment.service.name }}</p>
-                <p class="card-text mb-2"><strong>Tarih:</strong> {{ appointment.date }} - {{ appointment.time }}</p>
-                {% if appointment.notes %}
-                <p class="card-text mb-2"><strong>Not:</strong> {{ appointment.notes }}</p>
-                {% endif %}
+                <h5 class="card-title">{{ appointment.customer.username }}</h5>
+                <p class="card-text">
+                    <strong>Hizmet:</strong> {{ appointment.service.name }}<br>
+                    <strong>Personel:</strong>
+                    {% if appointment.staff %}
+                    <span class="badge bg-info">{{ appointment.staff.name }}</span>
+                    {% else %}
+                    <span class="text-muted">Atanmadı</span>
+                    {% endif %}<br>
+                    <strong>Tarih:</strong> {{ appointment.date }}<br>
+                    <strong>Saat:</strong> {{ appointment.time }}<br>
+                    <strong>Notlar:</strong> {{ appointment.notes|default:"-" }}<br>
+                </p>
                 <p class="card-text mb-3">
                     <strong>Durum:</strong>
                     <span
