@@ -8,6 +8,7 @@ class Appointment(models.Model):
         ('confirmed', 'Onaylandı'),
         ('completed', 'Tamamlandı'),
         ('cancelled', 'İptal Edildi'),
+        ('no_show', 'Gelmedi'),
     ]
     
     TABLE_CHOICES = [
