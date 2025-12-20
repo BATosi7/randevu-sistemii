@@ -10,11 +10,10 @@ def create_appointment(request, service_id):
     service = get_object_or_404(Service, pk=service_id)
     company = service.company
 
-    # Prevent business owner from booking at their own company
-    if request.user.role == 'business_owner' and hasattr(request.user, 'company'):
-        if request.user.company == company:
-            messages.error(request, 'Kendi işletmenize randevu alamazsınız.')
-            return redirect('company_detail', pk=company.id)
+    # Prevent business owners and staff from booking appointments
+    if request.user.role in ['business_owner', 'staff']:
+        messages.error(request, 'İşletme sahipleri ve personel randevu alamaz. Sadece müşteriler randevu alabilir.')
+        return redirect('company_detail', pk=company.id)
 
     if request.method == 'POST':
         form = AppointmentForm(request.POST, company=company)
