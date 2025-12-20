@@ -158,11 +158,6 @@ http://127.0.0.1:8000/
 
 ---
 
-## 🌐 Deployment
-
-### Canlı Demo
-**URL:** https://batosi.pythonanywhere.com
-
 ### Ngrok ile (Geliştirme)
 ```bash
 # Django başlat
