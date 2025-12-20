@@ -1,10 +1,8 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
 # 🗓️ Randevu Sistemi
 
-Modern, kullanıcı dostu ve tam fonksiyonel bir randevu yönetim sistemi. Müşteriler çeşitli kategorilerdeki işletmelerden randevu alabilir, işletme sahipleri randevularını yönetebilir.
+Modern, kullanıcı dostu ve tam fonksiyonel bir randevu yönetim sistemi. Müşteriler çeşitli kategorilerdeki işletmelerden randevu alabilir, işletme sahipleri ve personel randevularını yönetebilir.
 
-![Django](https://img.shields.io/badge/Django-6.0-green)
+![Django](https://img.shields.io/badge/Django-5.1-green)
 ![Python](https://img.shields.io/badge/Python-3.13-blue)
 ![License](https://img.shields.io/badge/License-MIT-yellow)
 
@@ -15,7 +13,7 @@ Modern, kullanıcı dostu ve tam fonksiyonel bir randevu yönetim sistemi. Müş
 ### 👤 Müşteri Özellikleri
 - ✅ Kategori bazlı işletme arama
 - ✅ İşletme detayları ve hizmet listesi
-- ✅ Randevu oluşturma (tarih, saat, hizmet seçimi)
+- ✅ Personel seçimi ile randevu oluşturma
 - ✅ Randevu iptal etme
 - ✅ Randevu durumu takibi
 - ✅ Tamamlanan randevuları değerlendirme (1-5 yıldız + yorum)
@@ -26,6 +24,13 @@ Modern, kullanıcı dostu ve tam fonksiyonel bir randevu yönetim sistemi. Müş
 - ✅ Haftalık trend grafiği (Chart.js)
 - ✅ Hizmet popülaritesi grafiği
 - ✅ Gelir takibi
+- ✅ Personel yönetimi
+
+### 👨‍💼 Personel Özellikleri ⭐ YENİ
+- ✅ Personel dashboard
+- ✅ Müsait saat ekleme ve yönetimi
+- ✅ Atanan randevuları görüntüleme
+- ✅ Randevu istatistikleri
 
 ### 🔒 Güvenlik & Validasyon
 - ✅ Geçmiş tarih kontrolü
@@ -46,7 +51,7 @@ Modern, kullanıcı dostu ve tam fonksiyonel bir randevu yönetim sistemi. Müş
 
 ### Backend
 - **Python 3.13**
-- **Django 6.0**
+- **Django 5.1**
 - **SQLite** (Veritabanı)
 
 ### Frontend
@@ -61,8 +66,8 @@ Modern, kullanıcı dostu ve tam fonksiyonel bir randevu yönetim sistemi. Müş
 
 ### 1. Projeyi İndir
 ```bash
-git clone https://github.com/USERNAME/randevu-sistemi.git
-cd randevu-sistemi
+git clone https://github.com/BATosi7/randevu-sistemii.git
+cd randevu-sistemii
 ```
 
 ### 2. Virtual Environment Oluştur
@@ -82,17 +87,12 @@ pip install -r requirements.txt
 python manage.py migrate
 ```
 
-### 5. Demo Verileri Yükle (Opsiyonel)
-```bash
-python manage.py populate_data
-```
-
-### 6. Sunucuyu Başlat
+### 5. Sunucuyu Başlat
 ```bash
 python manage.py runserver
 ```
 
-### 7. Tarayıcıda Aç
+### 6. Tarayıcıda Aç
 ```
 http://127.0.0.1:8000/
 ```
@@ -114,9 +114,9 @@ http://127.0.0.1:8000/
 | `ali_makas` | Ali Makas | `pass` |
 | `inci_dis` | İnci Diş Polikliniği | `pass` |
 
-### Personel Hesapları
-| Kullanıcı Adı | İşletme | Hizmet | Şifre |
-|---------------|---------|--------|-------|
+### Personel Hesapları ⭐
+| Kullanıcı Adı | İşletme | Uzmanlık | Şifre |
+|---------------|---------|----------|-------|
 | `ahmet_berber` | Ali Makas | Saç Kesimi | `pass` |
 | `ayse_kuafor` | Ali Makas | Saç Boyama | `pass` |
 | `mehmet_disci` | İnci Diş | Diş Temizliği | `pass` |
@@ -125,13 +125,11 @@ http://127.0.0.1:8000/
 
 ## 📊 Kategoriler
 
-- 🦷 **Dişçi** (5 işletme)
-- ☕ **Cafe** (5 işletme)
-- 👶 **Bebek Bakımı** (5 işletme)
-- ✂️ **Kuaför** (5 işletme)
-- 🔧 **Tamirat** (5 işletme)
-
-**Toplam:** 15 işletme, 75+ hizmet
+- 🦷 **Dişçi**
+- ☕ **Cafe**
+- 👶 **Bebek Bakımı**
+- ✂️ **Kuaför**
+- 🔧 **Tamirat**
 
 ---
 
@@ -140,7 +138,7 @@ http://127.0.0.1:8000/
 ### Müşteri Akışı
 1. Kategori seç
 2. İşletme seç
-3. Hizmet seç
+3. Hizmet ve personel seç
 4. Tarih ve saat belirle
 5. Randevu oluştur
 6. Randevu tamamlandıktan sonra değerlendir
@@ -152,24 +150,20 @@ http://127.0.0.1:8000/
 4. Tamamlanan randevuları işaretle
 5. İstatistikleri incele
 
----
-
-## 📸 Ekran Görüntüleri
-
-### Anasayfa
-![Anasayfa](screenshots/home.png)
-
-### Dashboard
-![Dashboard](screenshots/dashboard.png)
-
-### Randevu Oluşturma
-![Randevu](screenshots/appointment.png)
+### Personel Akışı ⭐
+1. Personel dashboard'a git
+2. Müsait saatlerini ekle
+3. Atanan randevuları gör
+4. Randevu durumlarını takip et
 
 ---
 
 ## 🌐 Deployment
 
-### Ngrok ile (Ücretsiz)
+### Canlı Demo
+**URL:** https://batosi.pythonanywhere.com
+
+### Ngrok ile (Geliştirme)
 ```bash
 # Django başlat
 python manage.py runserver
@@ -178,14 +172,21 @@ python manage.py runserver
 ngrok http 8000
 ```
 
-### Production (PythonAnywhere, Heroku, vb.)
-Detaylı talimatlar için `deployment_guide.md` dosyasına bakın.
-
 ---
 
-## 📝 Lisans
+## 📝 Veritabanı Yapısı
 
-MIT License - Detaylar için `LICENSE` dosyasına bakın.
+### Tablolar
+1. **Users** - Kullanıcılar (müşteri, işletme, personel)
+2. **Categories** - Kategoriler
+3. **Companies** - İşletmeler
+4. **Services** - Hizmetler
+5. **Staff** - Personel
+6. **StaffAvailability** - Personel müsait saatler ⭐
+7. **Appointments** - Randevular
+8. **Rating** - Değerlendirmeler
+
+Detaylı veritabanı yapısı için `docs/veritabani_sql.md` dosyasına bakın.
 
 ---
 
@@ -201,9 +202,9 @@ MIT License - Detaylar için `LICENSE` dosyasına bakın.
 
 ## 📧 İletişim
 
-Proje Sahibi - [@username](https://github.com/username)
+Proje Linki: [https://github.com/BATosi7/randevu-sistemii](https://github.com/BATosi7/randevu-sistemii)
 
-Proje Linki: [https://github.com/username/randevu-sistemi](https://github.com/username/randevu-sistemi)
+Canlı Demo: [https://batosi.pythonanywhere.com](https://batosi.pythonanywhere.com)
 
 ---
 
@@ -213,13 +214,8 @@ Proje Linki: [https://github.com/username/randevu-sistemi](https://github.com/us
 - [Bootstrap](https://getbootstrap.com/)
 - [Chart.js](https://www.chartjs.org/)
 - [FontAwesome](https://fontawesome.com/)
+- [PythonAnywhere](https://www.pythonanywhere.com/)
 
 ---
 
 **⭐ Projeyi beğendiyseniz yıldız vermeyi unutmayın!**
-=======
-# randevu-sistemi
->>>>>>> 3f137e92ae3f7c6f73407a05265f72d0391002cd
-=======
-# randevu-sistemii
->>>>>>> 77072e658cc214bdc2ffdbed65aec9b35ccf8e79
