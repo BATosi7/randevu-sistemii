@@ -19,7 +19,7 @@ class AppointmentForm(forms.ModelForm):
 
     class Meta:
         model = Appointment
-        fields = ['staff', 'date', 'time', 'notes']
+        fields = ['staff', 'date', 'time', 'table_type', 'notes']
         widgets = {
             'staff': forms.Select(attrs={'class': 'form-select'}),
             'date': forms.DateInput(attrs={
@@ -27,12 +27,14 @@ class AppointmentForm(forms.ModelForm):
                 'class': 'form-control',
                 'min': '{% now "Y-m-d" %}'
             }),
+            'table_type': forms.Select(attrs={'class': 'form-select'}),
             'notes': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
         }
         labels = {
             'staff': 'Personel (Opsiyonel)',
             'date': 'Tarih',
             'time': 'Saat',
+            'table_type': 'Masa Tipi',
             'notes': 'Notlar'
         }
 
@@ -49,6 +51,13 @@ class AppointmentForm(forms.ModelForm):
             from business.models import Staff
             self.fields['staff'].queryset = Staff.objects.filter(company=self.company)
             self.fields['staff'].required = False
+            
+            # Masa tipi sadece cafe kategorisinde gösterilsin
+            if self.company.category and self.company.category.name.lower() == 'cafe':
+                self.fields['table_type'].required = True
+            else:
+                self.fields['table_type'].widget = forms.HiddenInput()
+                self.fields['table_type'].required = False
 
     def clean(self):
         cleaned_data = super().clean()
