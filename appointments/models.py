@@ -10,6 +10,11 @@ class Appointment(models.Model):
         ('cancelled', 'İptal Edildi'),
     ]
     
+    TABLE_CHOICES = [
+        ('2_person', '2 Kişilik Masa'),
+        ('4_person', '4 Kişilik Masa'),
+    ]
+    
     customer = models.ForeignKey('users.User', on_delete=models.CASCADE, related_name='appointments')
     company = models.ForeignKey('business.Company', on_delete=models.CASCADE, related_name='appointments')
     service = models.ForeignKey('business.Service', on_delete=models.CASCADE, related_name='appointments')
@@ -18,6 +23,7 @@ class Appointment(models.Model):
     time = models.TimeField()
     notes = models.TextField(blank=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    table_type = models.CharField(max_length=20, choices=TABLE_CHOICES, null=True, blank=True, verbose_name='Masa Tipi')
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
