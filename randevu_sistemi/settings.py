@@ -31,6 +31,7 @@ ALLOWED_HOSTS = [
     '.ngrok-free.app',
     '.ngrok-free.dev',
     '.ngrok.io',
+    'batosi.pythonanywhere.com',
 ]
 
 CSRF_TRUSTED_ORIGINS = [
@@ -38,6 +39,7 @@ CSRF_TRUSTED_ORIGINS = [
     'https://*.ngrok-free.dev',
     'https://*.ngrok.io',
     'http://*.ngrok-free.dev',
+    'https://batosi.pythonanywhere.com',
 ]
 
 
