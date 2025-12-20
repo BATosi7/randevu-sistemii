@@ -6,7 +6,7 @@ from django.utils import timezone
 from django.http import JsonResponse
 from django.db.models import Q
 import datetime
-from .models import Category, Company, StaffAvailability, Staff
+from .models import Category, Company, StaffAvailability, Staff, Service
 from appointments.models import Appointment
 
 def home(request):
@@ -219,3 +219,50 @@ def delete_staff(request, pk):
     return render(request, 'business/staff_confirm_delete.html', {
         'staff': staff
     })
+
+
+# Hizmet Yönetimi (İşletme Sahibi)
+@user_passes_test(is_business_owner)
+def manage_services(request):
+    company = request.user.company
+    services = Service.objects.filter(company=company)
+    return render(request, 'business/manage_services.html', {'services': services})
+
+@user_passes_test(is_business_owner)
+def add_service(request):
+    from .forms import ServiceForm
+    company = request.user.company
+    if request.method == 'POST':
+        form = ServiceForm(request.POST, company=company)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Hizmet başarıyla eklendi.')
+            return redirect('manage_services')
+    else:
+        form = ServiceForm(company=company)
+    return render(request, 'business/service_form.html', {'form': form, 'title': 'Hizmet Ekle'})
+
+@user_passes_test(is_business_owner)
+def edit_service(request, pk):
+    from .forms import ServiceForm
+    company = request.user.company
+    service = get_object_or_404(Service, pk=pk, company=company)
+    if request.method == 'POST':
+        form = ServiceForm(request.POST, instance=service, company=company)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Hizmet bilgileri güncellendi.')
+            return redirect('manage_services')
+    else:
+        form = ServiceForm(instance=service, company=company)
+    return render(request, 'business/service_form.html', {'form': form, 'title': 'Hizmet Düzenle', 'service': service})
+
+@user_passes_test(is_business_owner)
+def delete_service(request, pk):
+    company = request.user.company
+    service = get_object_or_404(Service, pk=pk, company=company)
+    if request.method == 'POST':
+        service.delete()
+        messages.success(request, 'Hizmet silindi.')
+        return redirect('manage_services')
+    return render(request, 'business/service_confirm_delete.html', {'service': service})

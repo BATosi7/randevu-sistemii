@@ -15,4 +15,9 @@ urlpatterns = [
     path('staff/add/', views.add_staff, name='add_staff'),
     path('staff/<int:pk>/edit/', views.edit_staff, name='edit_staff'),
     path('staff/<int:pk>/delete/', views.delete_staff, name='delete_staff'),
+    # Service Management URLs (İşletme Sahibi)
+    path('services/', views.manage_services, name='manage_services'),
+    path('services/add/', views.add_service, name='add_service'),
+    path('services/<int:pk>/edit/', views.edit_service, name='edit_service'),
+    path('services/<int:pk>/delete/', views.delete_service, name='delete_service'),
 ]

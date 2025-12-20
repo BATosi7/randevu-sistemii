@@ -1,5 +1,5 @@
 from django import forms
-from .models import StaffAvailability, Staff
+from .models import StaffAvailability, Staff, Service
 from users.models import User
 
 class AvailabilityForm(forms.ModelForm):
@@ -136,3 +136,32 @@ class StaffForm(forms.ModelForm):
         
         return staff
 
+class ServiceForm(forms.ModelForm):
+    class Meta:
+        model = Service
+        fields = ['name', 'duration', 'price']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Örn: Saç Kesimi'}),
+            'duration': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Dakika cinsinden'}),
+            'price': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01', 'placeholder': 'TL'}),
+        }
+        labels = {
+            'name': 'Hizmet Adı',
+            'duration': 'Süre (Dakika)',
+            'price': 'Fiyat (TL)'
+        }
+    
+    def __init__(self, *args, **kwargs):
+        self.company = kwargs.pop('company', None)
+        super().__init__(*args, **kwargs)
+    
+    def save(self, commit=True):
+        service = super().save(commit=False)
+        
+        if self.company:
+            service.company = self.company
+        
+        if commit:
+            service.save()
+        
+        return service
