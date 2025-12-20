@@ -6,7 +6,7 @@ from django.utils import timezone
 from django.http import JsonResponse
 from django.db.models import Q
 import datetime
-from .models import Category, Company
+from .models import Category, Company, StaffAvailability
 from appointments.models import Appointment
 
 def home(request):
@@ -16,7 +16,7 @@ def home(request):
     if category_id:
         companies = Company.objects.filter(category_id=category_id)
     else:
-        companies = Company.objects.all()[:6] # Show first 6 companies if no filter
+        companies = Company.objects.all()[:6]
         
     return render(request, 'business/home.html', {'categories': categories, 'companies': companies})
 
@@ -38,10 +38,8 @@ def dashboard(request):
     company = request.user.company
     today = timezone.now().date()
     
-    # Check if we need to filter by status or date
     appointments = Appointment.objects.filter(company=company).order_by('date', 'time')
     
-    # Stats
     pending_count = appointments.filter(status='pending').count()
     today_count = appointments.filter(date=today).count()
     completed_appointments = appointments.filter(status='completed')
@@ -61,7 +59,6 @@ def dashboard(request):
 def dashboard_data(request):
     company = request.user.company
     
-    # 1. Weekly Appointment Trend (Last 7 days)
     labels = []
     data = []
     today = timezone.now().date()
@@ -71,7 +68,6 @@ def dashboard_data(request):
         labels.append(date.strftime("%d %b"))
         data.append(count)
     
-    # 2. Service Distribution
     service_data = Appointment.objects.filter(company=company).values('service__name').annotate(total=Count('id'))
     service_labels = [item['service__name'] for item in service_data]
     service_counts = [item['total'] for item in service_data]
@@ -91,15 +87,64 @@ def update_appointment_status(request, pk, status):
         appointment.status = status
         appointment.save()
         
-        # Status-specific messages
         status_messages = {
             'confirmed': f'Randevu onaylandı: {appointment.customer.username} - {appointment.service.name}',
             'cancelled': f'Randevu reddedildi: {appointment.customer.username} - {appointment.service.name}',
             'completed': f'Randevu tamamlandı olarak işaretlendi: {appointment.customer.username} - {appointment.service.name}',
-            'no_show': f'Müşteri gelmedi olarak işaretlendi: {appointment.customer.username} - {appointment.service.name}',
         }
         
         if status in status_messages:
             messages.success(request, status_messages[status])
     
     return redirect('dashboard')
+
+# Personel Views
+def is_staff(user):
+    return user.is_authenticated and user.role == 'staff' and hasattr(user, 'staff_profile')
+
+@user_passes_test(is_staff)
+def staff_dashboard(request):
+    """Personel dashboard'u"""
+    staff_profile = request.user.staff_profile
+    today = timezone.now().date()
+    
+    appointments = Appointment.objects.filter(
+        staff=staff_profile
+    ).order_by('date', 'time')
+    
+    availabilities = StaffAvailability.objects.filter(
+        staff=staff_profile,
+        date__gte=today
+    ).order_by('date', 'start_time')
+    
+    today_appointments = appointments.filter(date=today).count()
+    pending_appointments = appointments.filter(status='pending').count()
+    completed_appointments = appointments.filter(status='completed').count()
+    
+    context = {
+        'staff': staff_profile,
+        'appointments': appointments,
+        'availabilities': availabilities,
+        'today_appointments': today_appointments,
+        'pending_appointments': pending_appointments,
+        'completed_appointments': completed_appointments,
+    }
+    return render(request, 'business/staff_dashboard.html', context)
+
+@user_passes_test(is_staff)
+def add_availability(request):
+    """Personel müsait saat ekler"""
+    from .forms import AvailabilityForm
+    
+    if request.method == 'POST':
+        form = AvailabilityForm(request.POST)
+        if form.is_valid():
+            availability = form.save(commit=False)
+            availability.staff = request.user.staff_profile
+            availability.save()
+            messages.success(request, 'Müsait saat eklendi.')
+            return redirect('staff_dashboard')
+    else:
+        form = AvailabilityForm()
+    
+    return render(request, 'business/add_availability.html', {'form': form})

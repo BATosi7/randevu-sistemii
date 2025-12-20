@@ -16,9 +16,9 @@ def register(request):
 
 @login_required
 def login_success(request):
-    """
-    Redirects users based on their role after login.
-    """
     if request.user.role == 'business_owner':
         return redirect('dashboard')
-    return redirect('home')
+    elif request.user.role == 'staff':
+        return redirect('staff_dashboard')
+    else:
+        return redirect('home')
