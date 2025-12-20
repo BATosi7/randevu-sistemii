@@ -91,6 +91,7 @@ def update_appointment_status(request, pk, status):
             'confirmed': f'Randevu onaylandı: {appointment.customer.username} - {appointment.service.name}',
             'cancelled': f'Randevu reddedildi: {appointment.customer.username} - {appointment.service.name}',
             'completed': f'Randevu tamamlandı olarak işaretlendi: {appointment.customer.username} - {appointment.service.name}',
+            'no_show': f'Randevu "Gelmedi" olarak işaretlendi: {appointment.customer.username} - {appointment.service.name}',
         }
         
         if status in status_messages:
