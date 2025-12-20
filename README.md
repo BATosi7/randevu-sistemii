@@ -204,8 +204,6 @@ Detaylı veritabanı yapısı için `docs/veritabani_sql.md` dosyasına bakın.
 
 Proje Linki: [https://github.com/BATosi7/randevu-sistemii](https://github.com/BATosi7/randevu-sistemii)
 
-Canlı Demo: [https://batosi.pythonanywhere.com](https://batosi.pythonanywhere.com)
-
 ---
 
 ## 🙏 Teşekkürler
