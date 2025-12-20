@@ -22,9 +22,9 @@ def create_appointment(request, service_id):
             appointment = form.save(commit=False)
             appointment.customer = request.user
             appointment.company = company
-            appointment.service = service
+            # service and staff come from form
             appointment.save()
-            messages.success(request, f'Randevunuz başarıyla oluşturuldu! {company.name} - {service.name} ({appointment.date.strftime("%d.%m.%Y")} - {appointment.time})')
+            messages.success(request, f'Randevunuz başarıyla oluşturuldu! {company.name} - {appointment.service.name} ({appointment.date.strftime("%d.%m.%Y")} - {appointment.time})')
             return redirect('my_appointments')
     else:
         form = AppointmentForm(company=company)

@@ -19,22 +19,39 @@ class AppointmentForm(forms.ModelForm):
 
     class Meta:
         model = Appointment
-        fields = ['date', 'time', 'notes']
+        fields = ['service', 'staff', 'date', 'time', 'notes']
         widgets = {
+            'service': forms.Select(attrs={'class': 'form-select'}),
+            'staff': forms.Select(attrs={'class': 'form-select'}),
             'date': forms.DateInput(attrs={
                 'type': 'date',
                 'class': 'form-control',
-                'min': '{% now "Y-m-d" %}'  # This will be rendered in template
+                'min': '{% now "Y-m-d" %}'
             }),
             'notes': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+        }
+        labels = {
+            'service': 'Hizmet',
+            'staff': 'Personel (Opsiyonel)',
+            'date': 'Tarih',
+            'time': 'Saat',
+            'notes': 'Notlar'
         }
 
     def __init__(self, *args, **kwargs):
         self.company = kwargs.pop('company', None)
         super().__init__(*args, **kwargs)
+        
         # Set min date dynamically
         from datetime import date
         self.fields['date'].widget.attrs['min'] = date.today().strftime('%Y-%m-%d')
+        
+        # Filter service and staff by company
+        if self.company:
+            from business.models import Service, Staff
+            self.fields['service'].queryset = Service.objects.filter(company=self.company)
+            self.fields['staff'].queryset = Staff.objects.filter(company=self.company)
+            self.fields['staff'].required = False
 
     def clean(self):
         cleaned_data = super().clean()
