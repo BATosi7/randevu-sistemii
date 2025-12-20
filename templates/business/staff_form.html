@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h4><i class="fas fa-user-plus"></i> {{ title }}</h4>
+                </div>
+                <div class="card-body">
+                    {% if form.errors %}
+                    <div class="alert alert-danger">
+                        <strong>Hata!</strong>
+                        {% for field, errors in form.errors.items %}
+                        {% for error in errors %}
+                        <p class="mb-0">{{ field }}: {{ error }}</p>
+                        {% endfor %}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    <form method="post">
+                        {% csrf_token %}
+
+                        <h5 class="mb-3"><i class="fas fa-user"></i> Kullanıcı Bilgileri</h5>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Kullanıcı Adı *</label>
+                                {{ form.username }}
+                                <small class="text-muted">Giriş yaparken kullanılacak</small>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Şifre {% if not staff %}*{% endif %}</label>
+                                {{ form.password }}
+                                {% if staff %}
+                                <small class="text-muted">Değiştirmek istemiyorsanız boş bırakın</small>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Ad *</label>
+                                {{ form.first_name }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Soyad *</label>
+                                {{ form.last_name }}
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <h5 class="mb-3"><i class="fas fa-briefcase"></i> Personel Bilgileri</h5>
+                        <div class="mb-3">
+                            <label class="form-label">Ad Soyad (Görünen) *</label>
+                            {{ form.name }}
+                            <small class="text-muted">Müşterilere gösterilecek ad</small>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Uzmanlık Alanı</label>
+                            {{ form.expertise }}
+                            <small class="text-muted">Örn: Saç Kesimi, Diş Temizliği</small>
+                        </div>
+
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-save"></i> Kaydet
+                            </button>
+                            <a href="{% url 'manage_staff' %}" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> İptal
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

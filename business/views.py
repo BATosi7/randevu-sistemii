@@ -6,7 +6,7 @@ from django.utils import timezone
 from django.http import JsonResponse
 from django.db.models import Q
 import datetime
-from .models import Category, Company, StaffAvailability
+from .models import Category, Company, StaffAvailability, Staff
 from appointments.models import Appointment
 
 def home(request):
@@ -148,3 +148,74 @@ def add_availability(request):
         form = AvailabilityForm()
     
     return render(request, 'business/add_availability.html', {'form': form})
+
+# Personel Yönetimi (İşletme Sahibi)
+@user_passes_test(is_business_owner)
+def manage_staff(request):
+    """Personel listesi"""
+    company = request.user.company
+    staff_members = Staff.objects.filter(company=company)
+    
+    return render(request, 'business/manage_staff.html', {
+        'staff_members': staff_members
+    })
+
+@user_passes_test(is_business_owner)
+def add_staff(request):
+    """Personel ekle"""
+    from .forms import StaffForm
+    company = request.user.company
+    
+    if request.method == 'POST':
+        form = StaffForm(request.POST, company=company)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Personel başarıyla eklendi.')
+            return redirect('manage_staff')
+    else:
+        form = StaffForm(company=company)
+    
+    return render(request, 'business/staff_form.html', {
+        'form': form,
+        'title': 'Personel Ekle'
+    })
+
+@user_passes_test(is_business_owner)
+def edit_staff(request, pk):
+    """Personel düzenle"""
+    company = request.user.company
+    from .forms import StaffForm
+    staff = get_object_or_404(Staff, pk=pk, company=company)
+    
+    if request.method == 'POST':
+        form = StaffForm(request.POST, instance=staff, company=company)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Personel bilgileri güncellendi.')
+            return redirect('manage_staff')
+    else:
+        form = StaffForm(instance=staff, company=company)
+    
+    return render(request, 'business/staff_form.html', {
+        'form': form,
+        'title': 'Personel Düzenle',
+        'staff': staff
+    })
+
+@user_passes_test(is_business_owner)
+def delete_staff(request, pk):
+    """Personel sil"""
+    company = request.user.company
+    staff = get_object_or_404(Staff, pk=pk, company=company)
+    
+    if request.method == 'POST':
+        # Kullanıcı hesabını da sil
+        if staff.user:
+            staff.user.delete()
+        staff.delete()
+        messages.success(request, 'Personel silindi.')
+        return redirect('manage_staff')
+    
+    return render(request, 'business/staff_confirm_delete.html', {
+        'staff': staff
+    })
