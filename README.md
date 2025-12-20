@@ -114,6 +114,13 @@ http://127.0.0.1:8000/
 | `ali_makas` | Ali Makas | `pass` |
 | `inci_dis` | İnci Diş Polikliniği | `pass` |
 
+### Personel Hesapları
+| Kullanıcı Adı | İşletme | Hizmet | Şifre |
+|---------------|---------|--------|-------|
+| `ahmet_berber` | Ali Makas | Saç Kesimi | `pass` |
+| `ayse_kuafor` | Ali Makas | Saç Boyama | `pass` |
+| `mehmet_disci` | İnci Diş | Diş Temizliği | `pass` |
+
 ---
 
 ## 📊 Kategoriler
